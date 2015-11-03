@@ -18,9 +18,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class ContactListActivity extends AppCompatActivity {
 
-    Contact[] contactList;
+    ArrayList<Contact> contactList;
     ListView listView;
     int lastSelectedPosition;
     ArrayAdapter<Contact> adapter;
@@ -36,8 +39,7 @@ public class ContactListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "BARDOOOOOON", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                openDetailView(new Contact(), 2);
             }
         });
 
@@ -45,10 +47,11 @@ public class ContactListActivity extends AppCompatActivity {
         Contact contact = new Contact("Braden", "Herndon","555-555-5555","braden.herndon@gmail.com");
         Contact contact2 = new Contact("Michelle", "Hui Hua", "555-152-6152", "hui@hua.com");
         Contact contact3 = new Contact("Craig", "Buttlord", "666-152-6152", "buttlord@hua.com");
-        contactList = new Contact[3];
-        contactList[0] = contact;
-        contactList[1] = contact2;
-        contactList[2] = contact3;
+        contactList = new ArrayList<Contact>();
+        contactList.add(contact);
+        contactList.add(contact2);
+        contactList.add(contact3);
+        Collections.sort(contactList);
 
         adapter = new ArrayAdapter<Contact>(this, android.R.layout.simple_list_item_1, contactList);
 
@@ -59,23 +62,31 @@ public class ContactListActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 lastSelectedPosition = position;
                 Contact contact = (Contact) listView.getAdapter().getItem(position);
-                openDetailView(contact);
+                openDetailView(contact, 1);
             }
         });
     }
 
-    public void openDetailView(Contact contact) {
+    public void openDetailView(Contact contact, int code) {
         Intent intent = new Intent(this, DetailViewActivity.class);
         intent.putExtra("contact", contact);
-
-        startActivityForResult(intent, 1);
+        intent.putExtra("code", code);
+        startActivityForResult(intent, code);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent result) {
         if (requestCode == 1) {
             if (resultCode == Activity.RESULT_OK) {
-                contactList[lastSelectedPosition] = (Contact) result.getSerializableExtra("contact");
+                Contact newContact = (Contact) result.getSerializableExtra("contact");
+                contactList.set(lastSelectedPosition, newContact);
+                listView.setAdapter(adapter);
+            }
+        } else if (requestCode == 2) {
+            if (resultCode == Activity.RESULT_OK) {
+                Contact newContact = (Contact) result.getSerializableExtra("contact");
+                contactList.add(newContact);
+                Collections.sort(contactList);
                 listView.setAdapter(adapter);
             }
         }

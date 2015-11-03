@@ -37,17 +37,19 @@ public class DetailViewActivity extends AppCompatActivity {
         phone = (EditText) findViewById(R.id.phoneField);
         email = (EditText) findViewById(R.id.emailField);
 
+        Intent i = getIntent();
+
         fname.setEnabled(false);
         lname.setEnabled(false);
         phone.setEnabled(false);
         email.setEnabled(false);
 
-        Intent i = getIntent();
         Contact contact = (Contact) i.getSerializableExtra("contact");
         fname.setText(contact.getFirstName());
         lname.setText(contact.getLastName());
         phone.setText(contact.getPhoneNumber());
         email.setText(contact.getEmailAddress());
+
     }
 
     @Override
@@ -66,31 +68,33 @@ public class DetailViewActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.edit_action) {
-            editMode = !editMode;
-            fname.setEnabled(!fname.isEnabled());
-            lname.setEnabled(!lname.isEnabled());
-            phone.setEnabled(!phone.isEnabled());
-            email.setEnabled(!email.isEnabled());
-
-            ActionMenuItemView saveAction = (ActionMenuItemView) findViewById(R.id.edit_action);
-            if(editMode) {
-                saveAction.setTitle("Save");
-            } else {
-                saveAction.setTitle("Edit");
-
-                Intent result = new Intent();
-                Contact contact = new Contact(
-                        fname.getText().toString(),
-                        lname.getText().toString(),
-                        phone.getText().toString(),
-                        email.getText().toString());
-                result.putExtra("contact", contact);
-
-                setResult(Activity.RESULT_OK, result);
-                finish();
-            }
+            toggleEditMode();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void toggleEditMode() {
+        editMode = !editMode;
+        fname.setEnabled(!fname.isEnabled());
+        lname.setEnabled(!lname.isEnabled());
+        phone.setEnabled(!phone.isEnabled());
+        email.setEnabled(!email.isEnabled());
+
+        ActionMenuItemView saveAction = (ActionMenuItemView) findViewById(R.id.edit_action);
+        if(editMode) {
+            saveAction.setTitle("Save");
+        } else {
+            saveAction.setTitle("Edit");
+            Intent result = new Intent();
+            Contact contact = new Contact(
+                    fname.getText().toString(),
+                    lname.getText().toString(),
+                    phone.getText().toString(),
+                    email.getText().toString());
+            result.putExtra("contact", contact);
+            setResult(Activity.RESULT_OK, result);
+            finish();
+        }
     }
 }

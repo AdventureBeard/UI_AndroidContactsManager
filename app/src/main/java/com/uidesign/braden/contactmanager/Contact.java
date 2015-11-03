@@ -19,6 +19,13 @@ public class Contact implements Comparable<Contact>, Serializable {
         this.emailAddress = emailAddress;
     }
 
+    public Contact() {
+        this.firstName = "";
+        this.lastName = "";
+        this.phoneNumber = "";
+        this.emailAddress = "";
+    }
+
     public String getFirstName() {
         return firstName;
     }
