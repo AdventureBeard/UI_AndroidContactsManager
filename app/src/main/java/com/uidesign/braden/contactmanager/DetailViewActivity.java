@@ -1,5 +1,7 @@
 package com.uidesign.braden.contactmanager;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,7 +18,8 @@ import android.widget.EditText;
 
 public class DetailViewActivity extends AppCompatActivity {
 
-    EditText name;
+    EditText fname;
+    EditText lname;
     EditText phone;
     EditText email;
 
@@ -29,13 +32,22 @@ public class DetailViewActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        name = (EditText) findViewById(R.id.personNameField);
-        phone = (EditText) findViewById(R.id.phoneNumberField);
-        email = (EditText) findViewById(R.id.emailAddressField);
+        fname = (EditText) findViewById(R.id.fnameField);
+        lname = (EditText) findViewById(R.id.lnameField);
+        phone = (EditText) findViewById(R.id.phoneField);
+        email = (EditText) findViewById(R.id.emailField);
 
-        name.setEnabled(false);
+        fname.setEnabled(false);
+        lname.setEnabled(false);
         phone.setEnabled(false);
         email.setEnabled(false);
+
+        Intent i = getIntent();
+        Contact contact = (Contact) i.getSerializableExtra("contact");
+        fname.setText(contact.getFirstName());
+        lname.setText(contact.getLastName());
+        phone.setText(contact.getPhoneNumber());
+        email.setText(contact.getEmailAddress());
     }
 
     @Override
@@ -55,7 +67,8 @@ public class DetailViewActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.edit_action) {
             editMode = !editMode;
-            name.setEnabled(!name.isEnabled());
+            fname.setEnabled(!fname.isEnabled());
+            lname.setEnabled(!lname.isEnabled());
             phone.setEnabled(!phone.isEnabled());
             email.setEnabled(!email.isEnabled());
 
@@ -64,6 +77,17 @@ public class DetailViewActivity extends AppCompatActivity {
                 saveAction.setTitle("Save");
             } else {
                 saveAction.setTitle("Edit");
+
+                Intent result = new Intent();
+                Contact contact = new Contact(
+                        fname.getText().toString(),
+                        lname.getText().toString(),
+                        phone.getText().toString(),
+                        email.getText().toString());
+                result.putExtra("contact", contact);
+
+                setResult(Activity.RESULT_OK, result);
+                finish();
             }
         }
 
