@@ -1,23 +1,17 @@
 package com.uidesign.braden.contactmanager;
 
 import android.app.Activity;
-import android.app.LoaderManager;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -27,10 +21,12 @@ public class ContactListActivity extends AppCompatActivity {
     ListView listView;
     int lastSelectedPosition;
     ArrayAdapter<Contact> adapter;
+    ContactFileIO contactFileIO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("Contacts");
         setContentView(R.layout.activity_contact_list_view);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -43,20 +39,7 @@ public class ContactListActivity extends AppCompatActivity {
             }
         });
 
-        // contactList = ContactLoader.loadContacts();
-        Contact contact = new Contact("Braden", "Herndon","555-555-5555","braden.herndon@gmail.com");
-        Contact contact2 = new Contact("Michelle", "Hui Hua", "555-152-6152", "hui@hua.com");
-        Contact contact3 = new Contact("Craig", "Buttlord", "666-152-6152", "buttlord@hua.com");
-        contactList = new ArrayList<Contact>();
-        contactList.add(contact);
-        contactList.add(contact2);
-        contactList.add(contact3);
-        Collections.sort(contactList);
-
-        adapter = new ArrayAdapter<Contact>(this, android.R.layout.simple_list_item_1, contactList);
-
-        listView = (ListView) findViewById(R.id.listView);
-        listView.setAdapter(adapter);
+        populateContactsList();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -76,20 +59,41 @@ public class ContactListActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent result) {
+        // If the requestCode was 1, just update the last selected Contact entry.
         if (requestCode == 1) {
             if (resultCode == Activity.RESULT_OK) {
                 Contact newContact = (Contact) result.getSerializableExtra("contact");
                 contactList.set(lastSelectedPosition, newContact);
-                listView.setAdapter(adapter);
             }
+        // If the requestCode was 2, add a new entry to the Contact list.
         } else if (requestCode == 2) {
             if (resultCode == Activity.RESULT_OK) {
                 Contact newContact = (Contact) result.getSerializableExtra("contact");
                 contactList.add(newContact);
-                Collections.sort(contactList);
-                listView.setAdapter(adapter);
             }
         }
+        Collections.sort(contactList);
+        try {
+            contactFileIO.writeContacts(contactList);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        populateContactsList();
+    }
+
+    public void populateContactsList() {
+        // contactList = ContactFileIO.loadContacts();
+        try {
+            contactFileIO= new ContactFileIO(this);
+            contactList = contactFileIO.readContacts();
+            Collections.sort(contactList);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        adapter = new ArrayAdapter<Contact>(this, android.R.layout.simple_list_item_1, contactList);
+        listView = (ListView) findViewById(R.id.listView);
+        listView.setAdapter(adapter);
     }
 
 }

@@ -1,0 +1,8 @@
+Braden,Herndon,555-278-2086,braden.herndon@gmail.com
+Michelle,Nguyen,555-152-5555,michelle@nguyen.com
+Alex,Tombrello,499-555-5988,alex.sux@hotmail.com
+Bardon,Bardonius,555-874-1111,bardon@gmail.com
+Nox,VonKittyFace,222-278-2292,nox@kittyface.gov
+Lionel,VonKittyFace,949-278-3333,lionel@kittyface.gov
+Shelly,Shelbert,888-278-4404,shelz@facebook.com
+Nicole,Shintaku,669-555-3055,nicoleshintaku@gmail.com

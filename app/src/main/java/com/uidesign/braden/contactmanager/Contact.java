@@ -60,11 +60,11 @@ public class Contact implements Comparable<Contact>, Serializable {
 
     @Override
     public int compareTo(Contact otherContact) {
-        return this.lastName.compareTo(otherContact.lastName);
+        return this.firstName.compareTo(otherContact.firstName);
     }
 
     @Override
     public String toString() {
-        return this.lastName + ", " + this.firstName;
+        return this.firstName + " " + this.lastName + "\n" + this.phoneNumber;
     }
 }
